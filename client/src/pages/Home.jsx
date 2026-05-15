@@ -4,8 +4,9 @@ import { category } from "../utils/data";
 import HeaderImage from "../utils/Images/Header.png";
 import ProductCategoryCard from "../components/cards/ProductCategoryCard";
 import ProductsCard from "../components/cards/ProductsCard";
-import { getAllProducts } from "../api";
+import { getAllProducts} from "../api";
 import { CircularProgress } from "@mui/material";
+import AddProductModal from "../components/AddProductsModal";
 
 const Container = styled.div`
   padding: 20px 30px;
@@ -49,9 +50,29 @@ const CardWrapper = styled.div`
   }
 `;
 
+const AddButton = styled.button`
+  padding: 10px 18px;
+  border: none;
+  border-radius: 12px;
+  position: absolute;
+  right: 50px;
+  background: #ff2e63;
+  color: white;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.3s ease;
+
+  &:hover {
+    background: #e61e56;
+    transform: scale(1.03);
+  }
+`;
+
 const Home = () => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
 
   const getProducts = async () => {
     setLoading(true);
@@ -67,6 +88,14 @@ const Home = () => {
 
   return (
     <Container>
+      <section>
+         <AddButton onClick={() => setOpenModal(true)}>+ Add Product</AddButton>
+      </section>
+   
+      {openModal && (
+        <AddProductModal setOpenModal={setOpenModal} />
+      )}
+
       <Section>
         <Img src={HeaderImage} />
       </Section>
