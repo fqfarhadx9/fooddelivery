@@ -224,7 +224,7 @@ const ProductsCard = ({ product }) => {
     checkFavorite();
   }, [favorite]);
   return (
-    <Card>
+    <Card onClick={() => navigate(`/dishes/${product._id}`)}>
       <Top>
         <Image src={product?.img} />
         <Menu>
@@ -253,7 +253,7 @@ const ProductsCard = ({ product }) => {
           <Rating value={3.5} sx={{ fontSize: "14px" }} />
         </Rate>
       </Top>
-      <Details onClick={() => navigate(`/dishes/${product._id}`)}>
+      <Details >
         <Title>{product?.name}</Title>
         <Desc>{product?.desc}</Desc>
         <Price>

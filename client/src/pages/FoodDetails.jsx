@@ -15,6 +15,7 @@ import {
   deleteFromFavourite,
   getFavourite,
   getProductDetails,
+  placeOrder
 } from "../api";
 import { openSnackbar } from "../redux/reducers/SnackbarSlice";
 import { useDispatch } from "react-redux";
@@ -214,6 +215,25 @@ const FoodDetails = () => {
       });
   };
 
+  const addOrder = async () => {
+    setCartLoading(true);
+    const token = localStorage.getItem("krist-app-token");
+    await placeOrder(token, { products: [{ productId: id, quantity: 1 }] })
+      .then((res) => {
+        setCartLoading(false);
+        navigate("/orders");
+      })
+      .catch((err) => {
+        setCartLoading(false);
+        dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+      });
+    };
+
   useEffect(() => {
     getProduct();
     checkFavorite();
@@ -276,7 +296,7 @@ const FoodDetails = () => {
                 isLoading={cartLoading}
                 onClick={() => addCart()}
               />
-              <Button text="Order Now" full />
+              <Button text="Order Now" full onClick={() => addOrder()} />
               <Button
                 leftIcon={
                   favorite ? (
