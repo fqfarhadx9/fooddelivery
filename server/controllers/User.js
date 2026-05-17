@@ -13,7 +13,6 @@ export const UserRegister = async (req, res, next) => {
   try {
     const { email, password, name, img } = req.body;
 
-    //Check for existing user
     const existingUser = await User.findOne({ email }).exec();
     if (existingUser) {
       return next(createError(409, "Email is already in use."));
@@ -42,7 +41,6 @@ export const UserLogin = async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    //Check for existing user
     const user = await User.findOne({ email: email }).exec();
     if (!user) {
       return next(createError(409, "User not found."));
