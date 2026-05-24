@@ -19,6 +19,7 @@ import {
 } from "../api";
 import { openSnackbar } from "../redux/reducers/SnackbarSlice";
 import { useDispatch } from "react-redux";
+import OrderModal from "../components/OrderModal";
 
 const Container = styled.div`
   padding: 20px 30px;
@@ -146,6 +147,8 @@ const FoodDetails = () => {
   const [cartLoading, setCartLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState();
+  const [name, setName] = useState("");
+  const [openOrder, setOpenOrder] = useState(false);
 
   const getProduct = async () => {
     setLoading(true);
@@ -157,7 +160,7 @@ const FoodDetails = () => {
 
   const removeFavourite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     await deleteFromFavourite(token, { productId: id })
       .then((res) => {
         setFavorite(false);
@@ -176,7 +179,7 @@ const FoodDetails = () => {
 
   const addFavourite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     await addToFavourite(token, { productId: id })
       .then((res) => {
         setFavorite(true);
@@ -195,7 +198,7 @@ const FoodDetails = () => {
 
   const checkFavorite = async () => {
     setFavoriteLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     await getFavourite(token, { productId: id })
       .then((res) => {
         const isFavorite = res.data?.some((favorite) => favorite._id === id);
@@ -215,10 +218,14 @@ const FoodDetails = () => {
       });
   };
 
-  const addOrder = async () => {
+  const addOrder = async (formData) => {
+    console.log("FORM DATA:", formData);
     setCartLoading(true);
-    const token = localStorage.getItem("krist-app-token");
-    await placeOrder(token, { products: [{ productId: id, quantity: 1 }] })
+    const token = localStorage.getItem("food-app-token");
+    console.log("ORDER FUNCTION RUNNING");
+    console.log("TOKEN:", localStorage.getItem("food-app-token"));
+    console.log(token);
+    await placeOrder(token, formData)
       .then((res) => {
         setCartLoading(false);
         navigate("/orders");
@@ -241,7 +248,7 @@ const FoodDetails = () => {
 
   const addCart = async () => {
     setCartLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     await addToCart(token, { productId: id, quantity: 1 })
       .then((res) => {
         setCartLoading(false);
@@ -296,7 +303,17 @@ const FoodDetails = () => {
                 isLoading={cartLoading}
                 onClick={() => addCart()}
               />
-              <Button text="Order Now" full onClick={() => addOrder()} />
+              <Button text="Order Now" full onClick={() => setOpenOrder(true)} />
+
+               {openOrder && (
+                <OrderModal
+                  open={openOrder}
+                  setOpen={setOpenOrder}
+                  onPlaceOrder={addOrder}
+                  product={product}
+                />
+                )}
+
               <Button
                 leftIcon={
                   favorite ? (

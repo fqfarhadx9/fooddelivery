@@ -53,34 +53,51 @@ const SignIn = ({ setOpenAuth }) => {
   };
 
   const handelSignIn = async () => {
-    setLoading(true);
-    setButtonDisabled(true);
-    if (validateInputs()) {
-      await UserSignIn({ email, password })
-        .then((res) => {
-          dispatch(loginSuccess(res.data));
-          dispatch(
-            openSnackbar({
-              message: "Login Successful",
-              severity: "success",
-            })
-          );
-          setLoading(false);
-          setButtonDisabled(false);
-          setOpenAuth(false);
-        })
-        .catch((err) => {
-          setLoading(false);
-          setButtonDisabled(false);
-          dispatch(
-            openSnackbar({
-              message: err.message,
-              severity: "error",
-            })
-          );
-        });
-    }
-  };
+  setLoading(true);
+  setButtonDisabled(true);
+
+  if (validateInputs()) {
+
+    await UserSignIn({ email, password })
+
+      .then((res) => {
+
+
+        console.log("TOKEN:", res.data.token);
+
+        localStorage.setItem("food-app-token", res.data.token);
+
+        console.log("AFTER SAVE:", localStorage.getItem("food-app-token"));
+
+        dispatch(loginSuccess(res.data));
+
+        dispatch(
+          openSnackbar({
+            message: "Login Successful",
+            severity: "success",
+          })
+        );
+
+        setLoading(false);
+        setButtonDisabled(false);
+        setOpenAuth(false);
+
+      })
+
+      .catch((err) => {
+
+        setLoading(false);
+        setButtonDisabled(false);
+
+        dispatch(
+          openSnackbar({
+            message: err.message,
+            severity: "error",
+          })
+        );
+      });
+  }
+};
 
   return (
     <Container>

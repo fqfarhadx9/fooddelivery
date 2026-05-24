@@ -6,13 +6,17 @@ const OrderSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+    name: {
+      type: String,
+      required: true,
+    },
     address: {
       type: String,
       required: true,
     },
     status: {
       type: String,
-      default: "Payment Done",
+      default: "Pending",
     },
     user: {
       type: mongoose.Types.ObjectId,
