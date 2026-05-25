@@ -46,7 +46,7 @@ const Favourites = () => {
 
   const getProducts = async () => {
     setLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     await getFavourite(token).then((res) => {
       setProducts(res.data);
       setLoading(false);

@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import TextInput from "../components/TextInput";
 import Button from "../components/Button";
 import { addToCart, deleteFromCart, getCart, placeOrder } from "../api";
 import { useNavigate } from "react-router-dom";
@@ -8,6 +7,7 @@ import { CircularProgress } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { openSnackbar } from "../redux/reducers/SnackbarSlice";
 import { DeleteOutline } from "@mui/icons-material";
+import CheckoutForm from "../components/CheckoutForm";
 
 const Container = styled.div`
   padding: 20px 30px;
@@ -108,10 +108,6 @@ const ProDesc = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
 `;
-const ProSize = styled.div`
-  font-size: 14px;
-  font-weight: 500;
-`;
 
 const Right = styled.div`
   flex: 1;
@@ -121,19 +117,6 @@ const Right = styled.div`
   @media (max-width: 750px) {
     flex: 0.8;
   }
-`;
-const Subtotal = styled.div`
-  font-size: 22px;
-  font-weight: 600;
-  display: flex;
-  justify-content: space-between;
-`;
-const Delivery = styled.div`
-  font-size: 18px;
-  font-weight: 500;
-  display: flex;
-  gap: 6px;
-  flex-direction: column;
 `;
 
 const Cart = () => {
@@ -150,10 +133,18 @@ const Cart = () => {
     phoneNumber: "",
     completeAddress: "",
   });
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+
+  const [cardDetails, setCardDetails] = useState({
+    cardNumber: "",
+    expiryDate: "",
+    cvv: "",
+    cardHolder: "",
+  });
 
   const getProducts = async () => {
     setLoading(true);
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     await getCart(token).then((res) => {
       setProducts(res.data);
       setLoading(false);
@@ -192,12 +183,12 @@ const Cart = () => {
         return;
       }
 
-      const token = localStorage.getItem("krist-app-token");
-      const totalAmount = calculateSubtotal().toFixed(2);
+      const token = localStorage.getItem("food-app-token");
+      const total_amount = calculateSubtotal().toFixed(2);
       const orderDetails = {
         products,
         address: convertAddressToString(deliveryDetails),
-        totalAmount,
+        total_amount,
       };
 
       await placeOrder(token, orderDetails);
@@ -226,7 +217,7 @@ const Cart = () => {
   }, [reload]);
 
   const addCart = async (id) => {
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     await addToCart(token, { productId: id, quantity: 1 })
       .then((res) => {
         setReload(!reload);
@@ -243,7 +234,7 @@ const Cart = () => {
   };
 
   const removeCart = async (id, quantity, type) => {
-    const token = localStorage.getItem("krist-app-token");
+    const token = localStorage.getItem("food-app-token");
     let qnt = quantity > 0 ? 1 : null;
     if (type === "full") qnt = null;
     await deleteFromCart(token, {
@@ -283,7 +274,6 @@ const Cart = () => {
                     <TableItem bold>Price</TableItem>
                     <TableItem bold>Quantity</TableItem>
                     <TableItem bold>Subtotal</TableItem>
-                    <TableItem></TableItem>
                   </Table>
                   {products.map((item) => (
                     <Table>
@@ -343,94 +333,19 @@ const Cart = () => {
                   ))}
                 </Left>
                 <Right>
-                  <Subtotal>
+                  {/* <Subtotal>
                     Subtotal : ${calculateSubtotal().toFixed(2)}
-                  </Subtotal>
-                  <Delivery>
-                    Delivery Details:
-                    <div>
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "6px",
-                        }}
-                      >
-                        <TextInput
-                          small
-                          placeholder="First Name"
-                          value={deliveryDetails.firstName}
-                          handelChange={(e) =>
-                            setDeliveryDetails({
-                              ...deliveryDetails,
-                              firstName: e.target.value,
-                            })
-                          }
-                        />
-                        <TextInput
-                          small
-                          placeholder="Last Name"
-                          value={deliveryDetails.lastName}
-                          handelChange={(e) =>
-                            setDeliveryDetails({
-                              ...deliveryDetails,
-                              lastName: e.target.value,
-                            })
-                          }
-                        />
-                      </div>
-                      <TextInput
-                        small
-                        placeholder="Email Address"
-                        value={deliveryDetails.emailAddress}
-                        handelChange={(e) =>
-                          setDeliveryDetails({
-                            ...deliveryDetails,
-                            emailAddress: e.target.value,
-                          })
-                        }
-                      />
-                      <TextInput
-                        small
-                        placeholder="Phone no. +91 XXXXX XXXXX"
-                        value={deliveryDetails.phoneNumber}
-                        handelChange={(e) =>
-                          setDeliveryDetails({
-                            ...deliveryDetails,
-                            phoneNumber: e.target.value,
-                          })
-                        }
-                      />
-                      <TextInput
-                        small
-                        textArea
-                        rows="5"
-                        placeholder="Complete Address (Address, State, Country, Pincode)"
-                        value={deliveryDetails.completeAddress}
-                        handelChange={(e) =>
-                          setDeliveryDetails({
-                            ...deliveryDetails,
-                            completeAddress: e.target.value,
-                          })
-                        }
-                      />
-                    </div>
-                  </Delivery>
-                  <Delivery>
-                    Payment Details:
-                    <div>
-                      <TextInput small placeholder="Card Number" />
-                      <div
-                        style={{
-                          display: "flex",
-                          gap: "6px",
-                        }}
-                      >
-                        <TextInput small placeholder="Expiry Date" />
-                        <TextInput small placeholder="CVV" />
-                      </div>
-                      <TextInput small placeholder="Card Holder name" />
-                    </div>
-                  </Delivery>
+                  </Subtotal> */}
+                  <CheckoutForm
+                    deliveryDetails={deliveryDetails}
+                    setDeliveryDetails={setDeliveryDetails}
+
+                    paymentMethod={paymentMethod}
+                    setPaymentMethod={setPaymentMethod}
+
+                    cardDetails={cardDetails}
+                    setCardDetails={setCardDetails}
+                  />
                   <Button
                     text="Pace Order"
                     small
