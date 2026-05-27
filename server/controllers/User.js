@@ -138,12 +138,12 @@ export const getAllCartItems = async (req, res, next) => {
 
 export const placeOrder = async (req, res, next) => {
   try {
-    const { name, products, address, total_amount } = req.body;
+    const { products, address, total_amount } = req.body;
+    
     const userJWT = req.user;
     const user = await User.findById(userJWT.id);
 
     const order = new Orders({
-      name,
       products,
       user: user._id,
       total_amount,
