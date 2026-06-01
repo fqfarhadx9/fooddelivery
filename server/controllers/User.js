@@ -235,3 +235,4 @@ export const getUserFavorites = async (req, res, next) => {
     next(err);
   }
 };
+

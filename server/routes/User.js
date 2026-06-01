@@ -10,6 +10,7 @@ import {
   placeOrder,
   removeFromCart,
   removeFromFavorites,
+  searchProducts,
 } from "../controllers/User.js";
 import { verifyToken } from "../middleware/verifyUser.js";
 

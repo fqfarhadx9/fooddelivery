@@ -2,60 +2,7 @@ import React, { useState } from "react";
 import styled from "styled-components";
 import { addProducts } from "../api";
 
-const AddProductModal = ({ setOpenModal }) => {
-  const [product, setProduct] = useState({
-    name: "",
-    desc: "",
-    img: "",
-    org: "",   // selling price
-    mrp: "",   // original price
-    ingredients: "",
-    category: "",
-  });
-
-  const handleChange = (e) => {
-    setProduct({
-      ...product,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleSubmit = async () => {
-    const org = Number(product.org);
-    const mrp = Number(product.mrp);
-
-    const off = mrp ? ((mrp - org) / mrp) * 100 : 0;
-
-    const payload = [
-      {
-        name: product.name,
-        desc: product.desc,
-        img: product.img,
-        category: product.category,
-
-        ingredients: product.ingredients
-          .split(",")
-          .map((item) => item.trim()),
-
-        price: {
-          org,
-          mrp,
-          off: Math.round(off),
-        },
-      },
-    ];
-
-    try {
-      await addProducts(payload);
-
-      alert("Product Added");
-      setOpenModal(false);
-    } catch (err) {
-      console.log(err);
-    }
-  };
-
-  const ModalOverlay = styled.div`
+const ModalOverlay = styled.div`
   position: fixed;
   top: 0;
   left: 0;
@@ -135,6 +82,59 @@ const CloseButton = styled.div`
     color: red;
   }
 `;
+
+const AddProductModal = ({ setOpenModal }) => {
+  const [product, setProduct] = useState({
+    name: "",
+    desc: "",
+    img: "",
+    org: "",   // selling price
+    mrp: "",   // original price
+    ingredients: "",
+    category: "",
+  });
+
+  const handleChange = (e) => {
+    setProduct({
+      ...product,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async () => {
+    const org = Number(product.org);
+    const mrp = Number(product.mrp);
+
+    const off = mrp ? ((mrp - org) / mrp) * 100 : 0;
+
+    const payload = [
+      {
+        name: product.name,
+        desc: product.desc,
+        img: product.img,
+        category: product.category,
+
+        ingredients: product.ingredients
+          .split(",")
+          .map((item) => item.trim()),
+
+        price: {
+          org,
+          mrp,
+          off: Math.round(off),
+        },
+      },
+    ];
+
+    try {
+      await addProducts(payload);
+
+      alert("Product Added");
+      setOpenModal(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <ModalOverlay>

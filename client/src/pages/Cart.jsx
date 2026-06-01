@@ -180,6 +180,8 @@ const Cart = () => {
             severity: "error",
           })
         );
+        setButtonLoad(false);
+        
         return;
       }
 

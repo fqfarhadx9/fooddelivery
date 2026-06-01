@@ -10,6 +10,9 @@ import Cart from "./pages/Cart";
 import FoodDetails from "./pages/FoodDetails";
 import FoodListing from "./pages/FoodListing";
 import { useSelector } from "react-redux";
+import Order from "./pages/Order";
+import Orders from "./pages/Orders";
+import Contact from "./pages/Contact";
 
 const Container = styled.div``;
 
@@ -17,6 +20,8 @@ function App() {
   const { currentUser } = useSelector((state) => state.user);
   const { open, message, severity } = useSelector((state) => state.snackbar);
   const [openAuth, setOpenAuth] = useState(false);
+  const [search, setSearch] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
   return (
     <ThemeProvider theme={lightTheme}>
       <BrowserRouter>
@@ -25,13 +30,22 @@ function App() {
             setOpenAuth={setOpenAuth}
             openAuth={openAuth}
             currentUser={currentUser}
+            setShowSearch={setShowSearch}
           />
           <Routes>
-            <Route path="/" exact element={<Home />} />
+            <Route path="/" exact element={<Home  
+              showSearch={showSearch}
+              search={search}
+              setSearch={setSearch}
+              setShowSearch={setShowSearch} />} 
+            />
             <Route path="/favorite" exact element={<Favourites />} />
             <Route path="/cart" exact element={<Cart />} />
+            <Route path="/order/:id" exact element={<Order />} />
+            <Route path="/orders" exact element={<Orders />} />
             <Route path="/dishes/:id" exact element={<FoodDetails />} />
             <Route path="/dishes" exact element={<FoodListing />} />
+             <Route path="/contact" exact element={<Contact />} />
           </Routes>
           {openAuth && (
             <Authentication setOpenAuth={setOpenAuth} openAuth={openAuth} />
