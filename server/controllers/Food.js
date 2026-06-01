@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import Food from "../models/Food.js";
+import { createError } from "../error.js";
 
 export const addProducts = async (req, res, next) => {
   try {
@@ -70,10 +71,14 @@ export const getFoodItems = async (req, res, next) => {
 export const getFoodById = async (req, res, next) => {
   try {
     const { id } = req.params;
+    console.log("REQ PARAMS:", req.params);
+    console.log("ID:", id);
+    console.log("VALID:", mongoose.isValidObjectId(id));
     if (!mongoose.isValidObjectId(id)) {
       return next(createError(400, "Invalid product ID"));
     }
     const food = await Food.findById(id);
+    console.log(food);
     if (!food) {
       return next(createError(404, "Food not found"));
     }

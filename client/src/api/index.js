@@ -14,11 +14,6 @@ export const addProducts = async (data) => await API.post("/food/add", data);
 export const getAllProducts = async (filter) =>
   await API.get(`/food?${filter}`, filter);
 
-// export const getAllProducts = async (filter = null) =>
-//   await API.get("/food", {
-//     params: filter,
-//   });
-
 export const getProductDetails = async (id) => await API.get(`/food/${id}`);
 
 //Cart
