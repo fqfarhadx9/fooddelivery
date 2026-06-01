@@ -144,7 +144,7 @@ const TextButton = styled.span`
   }
 `;
 
-const Navbar = ({ setOpenAuth, openAuth, currentUser }) => {
+const Navbar = ({ setOpenAuth, openAuth, currentUser, setShowSearch }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
   return (
@@ -158,7 +158,7 @@ const Navbar = ({ setOpenAuth, openAuth, currentUser }) => {
         </NavLogo>
 
         <MobileIcons>
-          <Navlink to="/search">
+          <Navlink onClick={() => setShowSearch(true)}>
             <SearchRounded sx={{ color: "inherit", fontSize: "30px" }} />
           </Navlink>
           <Navlink to="/favorite">
@@ -223,7 +223,7 @@ const Navbar = ({ setOpenAuth, openAuth, currentUser }) => {
         )}
 
         <ButtonContainer>
-          <Navlink to="/search">
+          <Navlink onClick={() => setShowSearch(true)}>
             <SearchRounded sx={{ color: "inherit", fontSize: "30px" }} />
           </Navlink>
           {currentUser ? (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { category } from "../utils/data";
 import HeaderImage from "../utils/Images/Header.png";
@@ -7,6 +7,7 @@ import ProductsCard from "../components/cards/ProductsCard";
 import { getAllProducts} from "../api";
 import { CircularProgress } from "@mui/material";
 import AddProductModal from "../components/AddProductsModal";
+import CloseIcon from "@mui/icons-material/Close";
 
 const Container = styled.div`
   padding: 20px 30px;
@@ -54,25 +55,77 @@ const AddButton = styled.button`
   padding: 10px 18px;
   border: none;
   border-radius: 12px;
-  position: absolute;
-  right: 50px;
+
   background: #ff2e63;
   color: white;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+
   transition: 0.3s ease;
 
   &:hover {
     background: #e61e56;
-    transform: scale(1.03);
+  }
+
+  @media (max-width: 768px) {
+    width: auto;
+  }
+`;
+const TopBar = styled.div`
+  width: 100%;
+  max-width: 1200px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  gap: 15px;
+`;
+const LeftSide = styled.div`
+  display: flex;
+  align-items: center;
+`;
+const SearchBox = styled.div`
+  flex: 1;
+  max-width: 500px;
+
+  height: 50px;
+
+  display: flex;
+  align-items: center;
+
+  background: white;
+  border-radius: 14px;
+
+  padding: 0 15px;
+
+  box-shadow: rgba(0, 0, 0, 0.08) 0px 4px 15px;
+
+  input {
+    flex: 1;
+    border: none;
+    outline: none;
+    padding-left: 10px;
   }
 `;
 
-const Home = () => {
+const Home = ({ showSearch, search, setSearch, setShowSearch }) => {
   const [loading, setLoading] = useState(false);
   const [products, setProducts] = useState([]);
   const [openModal, setOpenModal] = useState(false);
+  const firstMatchRef = useRef(null);
+
+  const filteredProducts = products.filter((item) => {
+    if (!search.trim()) return true;
+
+    return (
+      item.name?.toLowerCase().includes(search.toLowerCase()) ||
+      item.category?.some((cat) =>
+        cat.toLowerCase().includes(search.toLowerCase())
+      )
+    );
+  });
 
   const getProducts = async () => {
     setLoading(true);
@@ -83,14 +136,49 @@ const Home = () => {
   };
 
   useEffect(() => {
+    if (
+      search.trim() &&
+      filteredProducts.length > 0 &&
+      firstMatchRef.current
+    ) {
+      firstMatchRef.current.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    }
+  }, [search, filteredProducts]);
+
+  useEffect(() => {
     getProducts();
   }, []);
 
   return (
     <Container>
-      <section>
-         <AddButton onClick={() => setOpenModal(true)}>+ Add Product</AddButton>
-      </section>
+      <TopBar>
+        <LeftSide>
+          {showSearch && (
+            <SearchBox>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search food..."
+                autoFocus
+              />
+
+              <CloseIcon
+                onClick={() => {
+                  setShowSearch(false);
+                  setSearch("");
+                }}
+              />
+            </SearchBox>
+          )}
+        </LeftSide>
+
+        <AddButton onClick={() => setOpenModal(true)}>
+          + Add Product
+        </AddButton>
+      </TopBar>
    
       {openModal && (
         <AddProductModal setOpenModal={setOpenModal} />
@@ -114,8 +202,11 @@ const Home = () => {
           <CircularProgress />
         ) : (
           <CardWrapper>
-            {products.map((product) => (
-              <ProductsCard key={product._id} product={product} />
+            {filteredProducts.map((product, index) => (
+              <div key={product._id} ref={index === 0 ? firstMatchRef : null}>
+                <ProductsCard product={product} />
+              </div>
+
             ))}
           </CardWrapper>
         )}
