@@ -65,13 +65,7 @@ const Left = styled.div`
     }
   }
 `;
-// const Table = styled.div`
-//   font-size: 16px;
-//   display: flex;
-//   align-items: center;
-//   gap: 30px;
-//   ${({ head }) => head && `margin-bottom: 22px`}
-// `;
+
 const Table = styled.div`
   display: grid;
   grid-template-columns: 3fr 1fr 1fr 1fr;
@@ -99,13 +93,6 @@ const TableItem = styled.div`
     `}
 `;
 
-// const TableItem = styled.div`
-//   ${({ flex }) => flex && `flex: 1; `}
-//   ${({ bold }) =>
-//     bold &&
-//     `font-weight: 600; 
-//   font-size: 18px;`}
-// `;
 const Counter = styled.div`
   display: flex;
   gap: 12px;
@@ -184,9 +171,6 @@ const Order = () => {
   const navigate = useNavigate();
 
   const getProducts = async () => {
-     console.log("getProducts called");
-  console.log("id =", id);
-
     setLoading(true);
     await getProductDetails(id).then((res) => {
       setProduct(res.data);
@@ -211,6 +195,7 @@ const Order = () => {
 
   const PlaceOrder = async () => {
     setButtonLoad(true);
+
     try {
       const isDeliveryDetailsFilled =
         deliveryDetails.firstName &&
@@ -220,28 +205,31 @@ const Order = () => {
         deliveryDetails.emailAddress;
 
       if (!isDeliveryDetailsFilled) {
-        // Show an error message or handle the situation where delivery details are incomplete
         dispatch(
           openSnackbar({
             message: "Please fill in all required delivery details.",
             severity: "error",
           })
         );
-
         setButtonLoad(false);
-
         return;
       }
 
       const token = localStorage.getItem("food-app-token");
-      const total_amount = (quantity * product?.price?.org).toFixed(2);
+
       const orderDetails = {
-        product,
+        products: [
+          {
+            product: product._id,
+            quantity: quantity,
+          },
+        ],
         address: convertAddressToString(deliveryDetails),
-        total_amount,
+        total_amount: Number((quantity * product?.price?.org).toFixed(2)),
       };
 
       await placeOrder(token, orderDetails);
+
       dispatch(
         openSnackbar({
           message: "Order placed successfully",
@@ -263,12 +251,11 @@ const Order = () => {
         cvv: "",
         cardHolder: "",
       });
-      navigate("/orders");
+
       setPaymentMethod("cod");
-
-      setButtonLoad(false);
-
       setReload(!reload);
+      navigate("/orders");
+
     } catch (err) {
       dispatch(
         openSnackbar({
@@ -276,6 +263,7 @@ const Order = () => {
           severity: "error",
         })
       );
+    } finally {
       setButtonLoad(false);
     }
   };

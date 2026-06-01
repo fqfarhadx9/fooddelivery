@@ -19,7 +19,6 @@ import {
 } from "../api";
 import { openSnackbar } from "../redux/reducers/SnackbarSlice";
 import { useDispatch } from "react-redux";
-import OrderModal from "../components/OrderModal";
 
 const Container = styled.div`
   padding: 20px 30px;
@@ -147,8 +146,7 @@ const FoodDetails = () => {
   const [cartLoading, setCartLoading] = useState(false);
   const [loading, setLoading] = useState(false);
   const [product, setProduct] = useState();
-  const [name, setName] = useState("");
-  const [openOrder, setOpenOrder] = useState(false);
+  
 
   const getProduct = async () => {
     setLoading(true);
@@ -303,16 +301,14 @@ const FoodDetails = () => {
                 isLoading={cartLoading}
                 onClick={() => addCart()}
               />
-              <Button text="Order Now" full onClick={() => setOpenOrder(true)} />
+              <Button text="Order Now" full onClick={() =>{ console.log(product._id); navigate(`/order/${product._id}`)}}/>
 
-               {openOrder && (
+               {/* {openOrder && (
                 <OrderModal
-                  open={openOrder}
-                  setOpen={setOpenOrder}
-                  onPlaceOrder={addOrder}
-                  product={product}
+                  // open={openOrder}
+                  // setOpen={setOpenOrder}
                 />
-                )}
+                )} */}
 
               <Button
                 leftIcon={
