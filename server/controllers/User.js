@@ -139,40 +139,47 @@ export const getAllCartItems = async (req, res, next) => {
 export const placeOrder = async (req, res, next) => {
   try {
     const { products, address, total_amount } = req.body;
-    
+
     const userJWT = req.user;
     const user = await User.findById(userJWT.id);
 
+    const formattedProducts = products?.map((p) => ({
+      product: p.product || p._id,   // handle both cases where product might be an object or just an ID
+      quantity: p.quantity || 1,
+    }));
+
     const order = new Orders({
-      products,
+      products: formattedProducts,
       user: user._id,
       total_amount,
       address,
     });
 
     await order.save();
+
     user.cart = [];
     await user.save();
-    return res
-      .status(200)
-      .json({ message: "Order placed successfully", order });
+
+    return res.status(200).json({
+      message: "Order placed successfully",
+      order,
+    });
   } catch (err) {
     next(err);
   }
 };
 
+// GET USER ORDERS
 export const getAllOrders = async (req, res, next) => {
   try {
-    const { productId } = req.body;
-    const userJWT = req.user;
-    const user = await User.findById(userJWT.id);
-    if (!user.favourites.includes(productId)) {
-      user.favourites.push(productId);
-      await user.save();
-    }
-    return res
-      .status(200)
-      .json({ message: "Product added to favorites successfully", user });
+    const orders = await Orders.find()
+      .populate("user", "name email")
+      .populate("products.product"); 
+
+    res.status(200).json({
+      success: true,
+      data: orders,
+    });
   } catch (err) {
     next(err);
   }
